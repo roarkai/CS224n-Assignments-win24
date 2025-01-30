@@ -1,0 +1,151 @@
+train module
+
+def evaluate_ppl(model, dev_data, batch_size) => 计算模型在dev set上的Perplexity
+    # 不用beam search，还是和训练阶段一样，用正确结果送入decoder做引导来看loss
+
+
+def compute_corpus_level_bleu_score(references, hypothesis) => 计算corpus level bleu score
+    # 1. 分别对reference(正确答案)和hypothesis(beam search结果)做detokenize
+    # 2. 调用sacreble库直接得到bleu值
+
+
+# 训练函数
+def train(cmd_line_args)    
+    # 1. 准备数据
+         # 1. 从文件中读取原始文本，并转化成sub_word sequence，格式是: list[list[sub_word]]
+              # 分别得到：
+                # train_data_src和train_data_tgt
+                # dev_data_src和dev_data_src
+         # 2. 分别把train data和dev data中的src和tgt list zip成pair
+         # 3. 模型训练过程的控制参数: 从cmd_line_args中读取
+              # batch_size: 每次iter处理一个batch
+              # clip_grad
+              # validation_every: 每多少次iter之后做validation
+              # log_every：每多少次iter之后做log
+              # model_save_path
+              # max_epoch：达到后就结束训练
+              # max_patience: 启动lr decay的signal
+                # 1. model在valiation时如果超过了之前ppl metric，就会保存一个新的checkpoint，且patience归0
+                # 2. 一旦validation时ppl表现停滞，没有比best更好，patience+1
+                # 3. 如果连续max_patience次都没有出现更好的ppl，就开始做lr decay
+              # max_num_trail：记录lr decay的次数，作为early stop signal
+                # 1. 每做一次lr decay就增加num_trail的计数，num_trail += 1
+                # 2. 当num_trail到达max_num_trail时，执行exit(0)，也即early stop
+
+    # 2. 直接从之前训练好的vocabulary file中load vocab
+
+    # 3. 配置tensorboard
+
+    # 4. 创建、配置model，并完成参数初始化
+         # 1. model = NMT(embed_size, hidden_size, dp_rate, vocab)
+         # 2. 将model配置到train mode
+         # 3. model中的参数初始化，默认用uniform init，操作不计入autograd
+         # 4. 设置device到gpu，将model移到device
+
+    # 5. 创建optimizer
+
+    # 6. 初始化训练过程要做记录的变量
+         # 1. 训练工作量：
+              # epoch数量{epoch=0}，batch iteration数量{train_iter}
+
+         # 2. lr decay控制：
+              # lr decay signal{patience=0}, lr decay操作数量{num_trail=0}
+
+         # 3. 模型的evaluation metric：
+              # 1. loss计算需要的数据：
+                   # cum_loss, cum_tgt_words, cum_examples
+                   # report_loss, report_tgt_words, report_examples
+
+         # 4. validation结果：
+              # 每次validation得到的model表现要append到一个list中：{valid_scores = []}
+              # {valid_num=0}
+
+         # 5. 时间：train_time = begin_time = time.time()
+
+    # 7. 外层做while循环，每次循环代表一个epoch
+         # 1. epoch += 1
+         # 2. 内层for遍历一个epoch中的所有batch
+
+              # 1. train_iter += 1
+
+              # 2. 执行模型计算，并更新梯度
+                   # 1. optimizer.zero_grad()
+                   # 2. 执行model(src_sents, tgt_sents)得到每个sentence的CE loss，sum得到batch_loss
+                        # loss = -model(src_sents, tgt_sents pair).sum() / batch_size
+                   # 3. loss.backward()
+                   # 4. clip gradient
+                   # 5. 更新梯度，optimizer.step()
+
+              # 3. 每次迭代完成后更新用于做记录的变量
+                   # 用于计算当前validation周期中的信息：  => validation使用，每个valiation周期归0一次
+                        # cum_loss += batch_loss
+                        # cum_tgt_words += sum(len(s[1:]) for s in tgt_sents), tgt_sents是目标值
+                        # cum_examples += batch_size
+                        # 每次做完validation信息记录后回归0
+                   
+                   # 用于计算当前log周期中的信息:        => log使用，每个log周期归0一次
+                        # report_loss += batch_loss
+                        # report_tgt_words += sum(len(s[1:]) for s in tgt_sents), tgt_sents是目标值
+                        # report_examples += batch_size
+                        # 每log_every次之后，做完log记录，report的3个信息归0
+
+
+              # 4. train_iter每增加log_every次，就做一次tensorboard信息记录，并写log file
+                   # 1. tensorboard
+                        # report_avg_loss = report_loss / report_tgt_words
+                        # report_avg_ppl = exp(report_avg_loss)
+                   # 2. log file: 
+                        # 1. 数量：epoch, train_iter, cum_examples
+                        # 2. report_avg_loss
+                        # 3. 每秒处理word数：speed = report_tgt_words / 本次log距离上次log的时间
+                        # 4. 已经耗时：当前时间 - 训练开始时间
+                   # 3. 做完log记录，report的3个信息归0
+
+              # 5. train_iter每增加validation_every次，就做一次validation，同时也做信息记录
+                   # 1. cumulative信息记录
+                        # tensorboard
+                          # cum_avg_loss = cum_loss / cum_tgt_words
+
+                        # log file
+                          # 1. epoch, train_iter
+                          # 2. cum_avg_loss
+                          # 3. cum_avg_ppl = exp(cum_avg_loss)
+                          # 4. cum_examples
+
+                        # 完成记录后cum的3个信息归0, valid_num += 1
+
+                   # 2. 计算在dev set上的ppl
+
+                   # 3. if ppl结果比此前记录更好
+                        # 1. patience归0
+                        # 2. 保存model和optimizer state
+
+                   #    elif patience没有达到设定的最大值
+                        # 1. patience += 1
+                        # 2. if pathience达到设定的最大值
+                             # 1. num_trial += 1
+
+                             # 2. if num_trial达到设定最大值max_num_trial, print('early stop'), exit(0)
+                             
+                             # 3. lr decay, 并重新将模型恢复到上一个最好的checkpoint
+                                  # 1. 改变lr：lr *= decay_rate
+                                  # 2. 改model：
+                                       # 1. load参数：parameters = torch.load(model_save_path,...)
+                                       # 2. 更新状态值：model.load_state_dict
+                                       # 3. 模型移到device：model = model.to(device)
+                                  # 3. 改optimizer：
+                                       # 1. load参数：opt_params = torch.load(model_save_path+'.optim')
+                                       # 2. 更新状态值：optimize.load_state_dict(opt_params)
+                                       # 3. 将optimizer中的'lr'参数更改为新的lr值
+                                  # 4. patience归0
+
+                   # 4. if epoch=max_epoch，exit(0)
+
+
+# 测试函数
+def decode(cmd_line_args)
+
+
+def beamsearch(): 调用model中的beam_search，得到翻译结果
+
+

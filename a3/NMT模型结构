@@ -1,0 +1,256 @@
+1. vocab module:
+
+def get_vocab_list(file, source, vocab_size):
+    # 训练sentencepiece，得到unique subword list
+    # 可以分别用于source和target，得到对应的subword lsit
+
+class VocabEntry:                       # 把vocabulary table存成dictionary，实现sub_word和id之间的转换
+    # self.word2id: Dictionary
+    # self.id2word: Dictionary
+    
+    def to_input_tensor(sents, device)
+        # 将list[list[subword-str]]pad成长度相同的id list再转torch.tensor
+    
+    @staticmethod 
+    def from_corpus(sub_word_corpus, size, freq_cutoff)
+        # 将subword corpus转成VocabEntry对象，其中出现频率小于freq_cutoff的sub_word不计入VocabEntry，且只取freq频次最高的size个sub_word
+    
+    @staticmethod 
+    def from_subword_list(sub_word_list)
+        # 将subword list中的sub_word转成VocabEntry对象
+
+
+class Vocab:                             # wrapper类
+    # self.src: VocabEntry obj
+    # self.tgt: VocabEntry obj
+
+    @staticmethod 
+    def build(src_sub_sents, tgt_sub_sents)
+        # 用sentencepiece输出的src和tgt sub_word sentence分别构造对应的src和tgt VocabEntry，并打包成一个Vocab obj
+    
+    @staticmethod 
+    def load(file_path)  # load json格式的Vocab
+
+    def save(file_path)  # 将Vocab存为json格式的文件
+
+
+2. util module：
+
+def pad_sents(sents, pad_token)
+    # 将list[list[sub_words in a line]]填成长度为最长line的matrix
+
+def read_corpus(file, source_tag, size)
+    # 从file中按line读取文本，用sentencepiece转成sub_word lines
+    # 如果是tgt corpus，还要在每行前后分别加上'<s>''</s>'标记开始和结束
+    # 返回list[list[sub_words in a line]]
+
+    => 返回值作为VocabEntry.from_corpus的input parameters，用来构建Vocabulary
+    => 返回值作为VocabEntry.to_input_tensor的input，先将sub_words转id再加上'<pad>'作为model输入
+
+
+3. model_embeddings module:
+
+class ModelEmbeddings(nn.Module):
+
+    <= embedding layer构造需要的input是embed_size，src/tgt对应vocab length, '<pad>'在src/tgt vocab中的id
+
+    # 构建两个embedding layer，分别对应encode和decode block
+    # self.source: encode block的embedding layer 
+    # self.target: decode block的embedding layer
+
+
+4. nmt module:
+
+class NMT(nn.module):
+
+    def __init__(self, embed_size, hidden_size, vocab, dp_rate):
+        # init layers and parameters
+        self.model_embeddings = ModelEmbeddings
+        self.post_embed_cnn = nn.Conv1D
+        self.encoder = nn.LSTM
+        self.decoder = nn.LSTMCell
+        self.projections = nn.linear
+        self.dropout = nn.dropout
+
+
+    def forward(src_b_sub_sents, tgt_b_sub_sents):
+
+        # 1. 计算source sentence的真实length，提供给LSTM使用，提高计算效率
+             => 输出source_lengths，作为encode block的输入
+
+        # 2. 基于self.vocab.src和self.vocab.tgt两个vocabulary，分别将两组input sents转成padded list[list[id]]
+             => 输出source_padded, target_padded
+
+        # 3. 执行forward计算
+             # 1. 执行encode block(source_lengths, source_padded)
+                  => 输出enc_hiddens, dec_init_state, 作为decode block的输入
+               
+             # 2. 构造source sents的pad mask
+                  # 用generate_sent_mask，source_padded中凡是pad了'<pad>'的地方，mask的取值就是1，其他值为0
+                  => 输出enc_mask, 作为decode block的输入
+
+             # 3. 执行decode block(target_padded, enc_hiddens, dec_init_state, enc_mask)
+                  => 输出combined_outputs，其维度是(tgt_len-1, b, h)，dim0中有一个-1是因为o_t中没有'<s>'
+
+             # 4. 先apply linear，再执行F.log_softmax，得到log Probability
+                  # linear layer将维度从(tgt_len-1, b, h)转为(tgt_len-1, b, |V_tgt|)
+                  # 再将output scores都转成Probability
+
+             # 5. 按Batch计算每个sentence的CrossEntropy Loss
+                  # 1. 用torch.gather从output Probability中取出每个Y_t_correct对应的logP(Y_correct)
+                       # 维度从(tgt_len-1, b, |V_tgt|)转为(tgt_len-1, b, 1)，再squeeze成(tgt_len-1, b)
+                  
+                  # 2. 构造target_mask，把每个target sequence中'<pad>'位置对应的logP(Y_correct)归0
+                       # mask构造方法：基于target_padded构造target_mask，pad了'<pad>'的地方元素值为0，其他地方为1
+             
+                  # 3. 每个句子的logP(y1, ..., yn)=sum(logP(y[i]))
+                       # sum(logP(y[i]|y[1]...y_[i-1]))=sum(logP(y[i]|y[i-1]))=sum(logP(y[i]))
+
+             => 输出每个batch of sentence的CrossEntropy Loss，形状是(b)
+
+
+    def encode(self, source_padded, source_lengths):     => 输出enc_hiddens和dec_init_state，供decode block使用
+        # 1. apply embedding layer，取出一个batch的source_padded sequence的embedding结果
+             # 处理的是source_padded对象
+
+        # 2. apply cnn layer
+             # 处理的是source_padded对象
+
+        # 3. apply bi-directional LSTM layer
+             # 1. 先将padded sequence数据用pack_padded_sequence处理成pack_sequence obj，这样RNN不用处理'<pad>'token
+             # 2. apply LSTM
+             # 3. 将输出的hidden value还原成padded sequence
+             # 4. 将输出的last hidden state和cell分别用linear layer转换成decoder的init hidden state和cell
+
+        => 输出enc_hiddens和dec_init_state，供decode block使用,enc_hiddens的shape是(b, src_len, 2h)
+
+    def generate_sent_mask(enc_hiddens, source_length): 
+        # 构造一个2D mask，每个维度的长度等于source_padded的前两个维度长(b, max_len)
+        # source_padded中凡是pad了'<pad>'的地方，mask的取值就是1，其他地方值为0
+
+
+    def decode(self, target_padded, dec_init_state, enc_hiddens): 
+        # 1. 砍掉target_padded的最后一个token，作为LSTM的input
+             # 相当于：
+             # LSTMCell的input对应target_padded的[:-1]；
+             # LSTMCell的output对应target_padded的[1:]
+
+        # 2. apply embedding layer，取出target Y
+             # 取出一个batch的target_padded[:-1] sequence的embedding结果target value Y
+
+        # 3. 先构造初始时刻的o_prev，取值为zero tensor，用它和target y_0作为LSTMCell的初始输入Ybar_0
+             # Ybar_0 = [y_0, o_0], 用他们做第一步input，对应的正确output总是'<s>'
+        
+        # 4. 启动遍历Y，计算每一步的output o_t
+             # 每步遍历的工作：
+               # 1. Ybar_t = cat(y_t, o_prev)
+               # 2. 调用step函数，更新dec_state和o_t(作为下一步的o_prev)，并将每步得到的o_t存入combined_outputs
+
+        => 输出combined_outputs，其中每个sequence的o_0，即第一个sub_word不是<s>，是其后一个sub_word
+
+
+    def step(Ybar_t, dec_state, enc_hiddens, enc_hid_proj, enc_masks)
+        # 1. apply LSTMCell，更新dec_state = nn.LSTMCell(configures)(Ybar_t, dec_state)
+
+        # 2. 从更新后的dec_state中取出dec_hidden_t来计算当前步的attention weights
+             # 1. 计算QWK值，这里Q是Ybar_t，WK就是enc_hid_proj
+             # 2. 用enc_mask将KQ中对应'<pad>'token位置的值都改成'-inf'
+                  # 注意：
+                    # 1. 这步必须做：不然'<pad>'位置的hidden state是LSTM后pad_packed自动填的0
+                    # 2. 这步不计入autograd：mask不影响非pad位置的梯度流动,而pad位置不用算梯度
+                    #    另外，将value直接改成'-inf'这个操作不可导，梯度也不存在
+             # 3. apply F.softmax计算attention weihgts
+
+        # 3. 计算这一步的attention weighted enc_hidden value: a_t
+
+        # 4. 对concat(dec_hidden_t, a_t)apply linear, tanh, dropout layer，得到o_t
+
+        => step函数输出：dec_state, o_t, QWK 值    
+
+
+    def beam_search(src_sent, beam_size, max_dec_time_step): # 对src_sent做beam search，返回翻译结果
+
+        # 1. encode src_sent
+             # 1. 将src_sent用to_input_tensor转换为list[sub_words],{src}
+             # 2. 对{src} apply encode block，得到{src_hidden}和{dec_init_state}
+             # 3. 对{src_hidden} apply linear layer，得到W*Key，记为{src_hidden_proj}
+
+        # 2. while循环执行前的参数准备
+             # 1. 初始化每步循环中step函数需要的参数的初始值
+                  # o_0 = torch.zeros()
+                  # sos_id = self.vocab.tgt['<s>']
+                  # eos_id = self.vocab.tgt['</s>']
+                  # y_0_embed = self.model_embeddings.target(sos_id)
+                  # Ybar_t = concatenate(y_0_embed, o_0)
+                  # dec_state = dec_init_state
+             
+             # 2. 初始化翻译结果的container
+                  # 翻译结果：hypotheses = [['<s>']], 每个元素是一个list[sub_word sents]，对应1种结果
+                  # hypotheses中结果的score值：hyp_scores = torch.zeros(len(hypotheses))
+                  # 译完之后的hypotheses和score pair存到：completed_hypothesis = []
+
+             # 3. time_step = 0
+
+        # 3. 执行while循环
+        while len(completed_hyp < beam_size) and time_step < max_decoding_time_step:
+            
+            time_step += 1
+
+            # 1. 给每个翻译结果都匹配一份src信息 <注意这个操作很巧妙 ！！！>
+                 # 1. 扩展src_hidden的dim0的长度: 得到{src_hidden_ext}
+                      # shape从(1, src_len, 2h)->(len(hypotheses), src_len, 2h)
+                 # 2. 扩展src_hidden_proj的dim0的长度: 得到{src_hidden_proj_ext}
+                      # shape从(1, src_len, h)->(len(hypotheses), src_len, h)
+
+            # 2. 执行一次step，每个hypotheses得到1个sub_word结果
+                 # @o_t的shape是(len(hypotheses), h)
+                 # @h_t, @c_t的shape是(len(hypotheses), h)
+            (h_t, c_t), o_t, _ = self.step(Ybar_t, dec_state, 
+                                           src_hidden_ext, src_hidden_proj_ext, mask=None)
+
+            # 3. 计算log Probability
+            log_p_t = F.log_softmax(self.target_vocab_projection(o_t)) # shape: (len(hypotheses),|V_tgt|)
+
+            # 4. 根据剩余可选翻译数，从log_p_t中选出得分最高的结果
+                 # 1. 剩余可选翻译数：live_hyp_num = beam_size - len(completed_hypothesis)
+
+                 # 2. 给所有候选句和vocab中每种sub_word的组合都计算新的score
+                 choices_score = (hyp_scores.unsqueeze(1).expand_as(log_p_t) + log_p_t)
+                      # 先将live_hyp_num个未完成的句子的score都重复|V_tgt|遍
+                      # 未完成的句子数量 * 所有可选sub_word数 = live_hyp_num * |V_tgt|
+                      # 把log_p_t加上去就得到新的每个句子与每种sub_word结合的新score
+
+                 # 3. 把这个新的score压平成一维数据，然后找到最大的k个score值和对应的位置
+                 top_cand_score, top_cand_posi = torch.topk(choices_score.view(-1), k=live_hyp_num)
+
+                 # 4. 按照top_cand_posi在映射回压平前的位置，找到k个最佳选项所属的句子序号和新增sub_word在vocab中序号 
+                      
+                 # 5. 遍历找到的k个答案：
+                      # 1. 如果新增的sub_word是'</s>'，就把这句话append到completed_hypothesis中去
+                      # 2. 如果不是，则对应更新hypotheses中的句子和对应的hype_score中的分数
+
+                 # 6. 如果这时候completed_hypotheses的数量达到了beam_size，结束while循环
+
+                 # 7. 更新下次循环中step要用的参数：
+                      # 1. Ybar_t
+                      # 2. dec_state
+
+            # 5. 如果退出while循环之后的len(completed_hypotheses)=0，就将hypotheses当前第一个句子放进去
+                 # 这时是因为time_step < max_decoding_time_step而停，且整个过程中翻译的结果都没有出现'</s>'
+
+            # 6. 将completed_hypotheses中的句子按score排序
+
+            => 返回completed_hypotheses
+
+
+
+
+    @property
+    def device(self)
+        return self.model_embeddings.source.weight.device
+
+
+    def load(model_path):  => 返回load的model
+    
+
+    def save(self, path):  # 把model存到指定文件中

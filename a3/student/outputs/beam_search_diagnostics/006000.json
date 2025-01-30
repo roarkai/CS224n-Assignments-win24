@@ -1,0 +1,245 @@
+{
+    "example_source": [
+        "▁我还",
+        "澄清",
+        "了",
+        "在该",
+        "会议上",
+        "提出的",
+        "若干",
+        "事项",
+        "。"
+    ],
+    "example_target": [
+        "<s>",
+        "▁i",
+        "▁was",
+        "▁able",
+        "▁to",
+        "▁provide",
+        "▁clarification",
+        "▁on",
+        "▁some",
+        "▁of",
+        "▁the",
+        "▁matters",
+        "▁which",
+        "▁were",
+        "▁raised",
+        "▁at",
+        "▁that",
+        "▁meeting",
+        ".",
+        "</s>"
+    ],
+    "hypotheses": [
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁have",
+                "▁to",
+                "▁clarify",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁at",
+                "▁the",
+                "▁meeting",
+                "."
+            ],
+            "score": -12.782327651977539
+        },
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁refer",
+                "▁to",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁have",
+                "▁been",
+                "▁taken",
+                "▁at",
+                "▁the",
+                "▁meeting",
+                "."
+            ],
+            "score": -15.523797988891602
+        },
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁refer",
+                "▁to",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁issues",
+                "▁that",
+                "▁have",
+                "▁been",
+                "▁taken",
+                "▁at",
+                "▁the",
+                "▁meeting",
+                "."
+            ],
+            "score": -15.55196475982666
+        },
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁refer",
+                "▁to",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁which",
+                "▁had",
+                "▁been",
+                "▁taken",
+                "▁at",
+                "▁the",
+                "▁meeting",
+                "."
+            ],
+            "score": -15.572907447814941
+        },
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁refer",
+                "▁to",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁issues",
+                "▁that",
+                "▁have",
+                "▁been",
+                "▁taken",
+                "▁into",
+                "▁account",
+                "."
+            ],
+            "score": -15.618477821350098
+        },
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁refer",
+                "▁to",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁issues",
+                "▁which",
+                "▁had",
+                "▁been",
+                "▁taken",
+                "▁at",
+                "▁the",
+                "▁meeting",
+                "."
+            ],
+            "score": -15.6348876953125
+        },
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁refer",
+                "▁to",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁have",
+                "▁been",
+                "▁taken",
+                "▁into",
+                "▁account",
+                "."
+            ],
+            "score": -15.663808822631836
+        },
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁refer",
+                "▁to",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁which",
+                "▁had",
+                "▁been",
+                "▁taken",
+                "▁at",
+                "▁this",
+                "▁meeting",
+                "."
+            ],
+            "score": -15.991183280944824
+        },
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁have",
+                "▁to",
+                "▁clarify",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁which",
+                "▁had",
+                "▁been",
+                "▁taken",
+                "▁at",
+                "▁the",
+                "▁meeting",
+                "."
+            ],
+            "score": -16.762468338012695
+        },
+        {
+            "hypothesis": [
+                "▁i",
+                "▁also",
+                "▁have",
+                "▁to",
+                "▁clarify",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁have",
+                "▁been",
+                "▁taken",
+                "▁at",
+                "▁the",
+                "▁meeting",
+                "."
+            ],
+            "score": -16.933168411254883
+        }
+    ],
+    "diagnostic_info": "eyJ0IjogIjIwMjQtMTEtMTJUMDk6MTE6MTguMTkwNTIyIiwgImgiOiAiU2VyMSIsICJ1IjogInJvYXJrIn0="
+}

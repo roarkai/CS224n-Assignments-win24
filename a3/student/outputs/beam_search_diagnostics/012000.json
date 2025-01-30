@@ -1,0 +1,246 @@
+{
+    "example_source": [
+        "▁我还",
+        "澄清",
+        "了",
+        "在该",
+        "会议上",
+        "提出的",
+        "若干",
+        "事项",
+        "。"
+    ],
+    "example_target": [
+        "<s>",
+        "▁i",
+        "▁was",
+        "▁able",
+        "▁to",
+        "▁provide",
+        "▁clarification",
+        "▁on",
+        "▁some",
+        "▁of",
+        "▁the",
+        "▁matters",
+        "▁which",
+        "▁were",
+        "▁raised",
+        "▁at",
+        "▁that",
+        "▁meeting",
+        ".",
+        "</s>"
+    ],
+    "hypotheses": [
+        {
+            "hypothesis": [
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁had",
+                "▁also",
+                "▁been",
+                "▁clarified",
+                "▁at",
+                "▁the",
+                "▁meeting",
+                "."
+            ],
+            "score": -9.697928428649902
+        },
+        {
+            "hypothesis": [
+                "▁clarify",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁have",
+                "▁also",
+                "▁been",
+                "▁clarified",
+                "▁at",
+                "▁the",
+                "▁meeting",
+                "."
+            ],
+            "score": -9.826891899108887
+        },
+        {
+            "hypothesis": [
+                "▁clarify",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁have",
+                "▁also",
+                "▁been",
+                "▁clarified",
+                "▁at",
+                "▁the",
+                "▁session",
+                "."
+            ],
+            "score": -10.502354621887207
+        },
+        {
+            "hypothesis": [
+                "▁clarification",
+                "▁is",
+                "▁also",
+                "▁clarified",
+                "▁by",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁have",
+                "▁been",
+                "▁made",
+                "▁at",
+                "▁that",
+                "▁session",
+                "."
+            ],
+            "score": -12.165156364440918
+        },
+        {
+            "hypothesis": [
+                "▁clarification",
+                "▁is",
+                "▁also",
+                "▁clarified",
+                "▁by",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁had",
+                "▁been",
+                "▁made",
+                "▁at",
+                "▁that",
+                "▁session",
+                "."
+            ],
+            "score": -12.28311824798584
+        },
+        {
+            "hypothesis": [
+                "▁clarification",
+                "▁was",
+                "▁also",
+                "▁clarified",
+                "▁by",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁have",
+                "▁been",
+                "▁made",
+                "▁at",
+                "▁that",
+                "▁session",
+                "."
+            ],
+            "score": -12.343076705932617
+        },
+        {
+            "hypothesis": [
+                "▁clarification",
+                "▁was",
+                "▁also",
+                "▁clarified",
+                "▁by",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁had",
+                "▁been",
+                "▁made",
+                "▁at",
+                "▁that",
+                "▁session",
+                "."
+            ],
+            "score": -12.447793006896973
+        },
+        {
+            "hypothesis": [
+                "▁clarification",
+                "▁is",
+                "▁also",
+                "▁clarified",
+                "▁by",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁have",
+                "▁been",
+                "▁made",
+                "▁at",
+                "▁that",
+                "▁meeting",
+                "."
+            ],
+            "score": -12.574284553527832
+        },
+        {
+            "hypothesis": [
+                "▁clarification",
+                "▁is",
+                "▁also",
+                "▁clarified",
+                "▁by",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁had",
+                "▁been",
+                "▁made",
+                "▁at",
+                "▁that",
+                "▁meeting",
+                "."
+            ],
+            "score": -12.698587417602539
+        },
+        {
+            "hypothesis": [
+                "▁clarification",
+                "▁has",
+                "▁also",
+                "▁been",
+                "▁clarified",
+                "▁by",
+                "▁a",
+                "▁number",
+                "▁of",
+                "▁matters",
+                "▁that",
+                "▁have",
+                "▁been",
+                "▁made",
+                "▁at",
+                "▁that",
+                "▁session",
+                "."
+            ],
+            "score": -13.302682876586914
+        }
+    ],
+    "diagnostic_info": "eyJ0IjogIjIwMjQtMTEtMTJUMTE6MDg6NTIuMDc0OTIzIiwgImgiOiAiU2VyMSIsICJ1IjogInJvYXJrIn0="
+}

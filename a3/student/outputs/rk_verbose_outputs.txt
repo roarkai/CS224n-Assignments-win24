@@ -1,0 +1,90 @@
+ china is a great nation.
+
+
+
+the following is half sentences during the beam search process:
+0 step result: ********************
+<s>▁china
+<s>▁it
+<s>▁there
+<s>▁the
+<s>▁chinese
+<s>▁as
+<s>▁this
+<s>▁and
+<s>▁a
+<s>▁in
+
+1 step result: ********************
+<s>▁china▁is
+<s>▁china▁was
+<s>▁china'
+<s>▁it▁is
+<s>▁china,
+<s>▁there▁is
+<s>▁china▁has
+<s>▁china▁a
+<s>▁as▁a
+<s>▁the▁china
+
+2 step result: ********************
+<s>▁china▁is▁a
+<s>▁china▁was▁a
+<s>▁china's
+<s>▁it▁is▁a
+<s>▁china,▁a
+<s>▁there▁is▁a
+<s>▁china▁is▁an
+<s>▁china▁has▁a
+<s>▁china▁a▁great
+<s>▁as▁a▁great
+
+3 step result: ********************
+<s>▁china▁is▁a▁great
+<s>▁china▁was▁a▁great
+<s>▁china's▁a
+<s>▁it▁is▁a▁great
+<s>▁china,▁a▁great
+<s>▁there▁is▁a▁great
+<s>▁china▁has▁a▁great
+<s>▁china▁is▁an▁great
+<s>▁china▁a▁great▁state
+<s>▁as▁a▁great▁country
+
+4 step result: ********************
+<s>▁china▁is▁a▁great▁nation
+<s>▁china▁is▁a▁great▁country
+<s>▁china▁is▁a▁great▁state
+<s>▁china▁is▁a▁great▁great
+<s>▁china▁was▁a▁great▁nation
+<s>▁china▁was▁a▁great▁state
+<s>▁china▁was▁a▁great▁country
+<s>▁china's▁a▁great
+<s>▁it▁is▁a▁great▁great
+<s>▁china▁was▁a▁great▁great
+
+5 step result: ********************
+<s>▁china▁is▁a▁great▁nation.
+<s>▁china▁is▁a▁great▁country.
+<s>▁china▁is▁a▁great▁state.
+<s>▁china▁is▁a▁great▁great▁state
+<s>▁china▁was▁a▁great▁nation.
+<s>▁china▁was▁a▁great▁country.
+<s>▁china▁is▁a▁great▁great▁nation
+<s>▁china▁is▁a▁great▁great▁country
+<s>▁china▁was▁a▁great▁state.
+<s>▁china▁is▁a▁great▁state▁of
+
+6 step result: ********************
+<s>▁china▁is▁a▁great▁great▁state.
+<s>▁china▁is▁a▁great▁great▁nation.
+<s>▁china▁is▁a▁great▁great▁country.
+<s>▁china▁is▁a▁great▁state▁of▁great
+
+7 step result: ********************
+<s>▁china▁is▁a▁great▁state▁of▁great▁state
+
+8 step result: ********************
+<s>▁china▁is▁a▁great▁state▁of▁great▁state.
+
+9 step result: ********************
